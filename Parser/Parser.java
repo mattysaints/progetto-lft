@@ -159,8 +159,8 @@ public class Parser {
                 term();
                 exprp();
                 break;
-            case ')':
             case Tag.RELOP:
+            case ')':
             case ';':
             case Tag.EOF:
             case '}':
@@ -193,8 +193,8 @@ public class Parser {
                 break;
             case '+':
             case '-':
-            case ')':
             case Tag.RELOP:
+            case ')':
             case ';':
             case Tag.EOF:
             case '}':
@@ -224,7 +224,7 @@ public class Parser {
 		
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = Config.filePath("test.pas"); // il percorso del file da leggere
+        String path = args[0]; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Parser parser = new Parser(lex, br);
