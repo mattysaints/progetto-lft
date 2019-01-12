@@ -1,9 +1,8 @@
-a:=5;
+print(10);
 read(a);
-case
-when(a==5)
-b:=3
-else
-while
-(a<>3)
-read(a)
+i:=0;
+while(a<>10){
+read(a);
+i:=i+1
+};
+print(i)

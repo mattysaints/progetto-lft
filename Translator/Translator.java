@@ -160,7 +160,8 @@ public class Translator {
             int lnext_whenlistp = lnext,
                 lend_whenlistp = lend;
             whenlistp(lnext_whenlistp,lend_whenlistp);
-            //code.emitLabel(lnext);            correggere sullo schema di traduzione
+            //non serve?
+            //code.emitLabel(lnext);
         } else error("syntax error");
     }
     
@@ -260,6 +261,8 @@ public class Translator {
                 break;
             case ')':
             case Tag.RELOP:
+            case Tag.WHEN:
+            case Tag.ELSE:
             case ';':
             case Tag.EOF:
             case '}':
@@ -297,6 +300,8 @@ public class Translator {
             case '-':
             case ')':
             case Tag.RELOP:
+            case Tag.WHEN:
+            case Tag.ELSE:
             case ';':
             case Tag.EOF:
             case '}':

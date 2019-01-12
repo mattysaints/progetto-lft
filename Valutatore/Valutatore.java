@@ -1,5 +1,3 @@
-package lft;
-
 import java.io.*; 
 
 //CORRETTO: NON MODIFICARE!

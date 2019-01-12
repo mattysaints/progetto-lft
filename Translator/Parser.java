@@ -31,8 +31,8 @@ public class Parser {
     public void prog() {
         if(look.tag==Tag.ID ||
            look.tag==Tag.PRINT ||
-           look.tag==Tag.CASE ||
            look.tag==Tag.READ ||
+           look.tag==Tag.CASE ||
            look.tag==Tag.WHILE ||
            look.tag=='{'){
             statlist();
@@ -43,8 +43,8 @@ public class Parser {
     private void statlist() {
         if(look.tag==Tag.ID ||
            look.tag==Tag.PRINT ||
-           look.tag==Tag.CASE ||
            look.tag==Tag.READ ||
+           look.tag==Tag.CASE ||
            look.tag==Tag.WHILE ||
            look.tag=='{'){
             stat();
@@ -57,7 +57,7 @@ public class Parser {
             match(';');
             stat();
             statlistp();
-        } else if(look.tag=='}' || look.tag==Tag.EOF);
+        } else if(look.tag==Tag.EOF || look.tag=='}');
         else error("syntax error");
     }
     
@@ -74,17 +74,17 @@ public class Parser {
                 expr();
                 match(')');
                 break;
-            case Tag.CASE:
-                match(Tag.CASE);
-                whenlist();
-                match(Tag.ELSE);
-                stat();
-                break;
             case Tag.READ:
                 match(Tag.READ);
                 match('(');
                 match(Tag.ID);
                 match(')');
+                break;
+            case Tag.CASE:
+                match(Tag.CASE);
+                whenlist();
+                match(Tag.ELSE);
+                stat();
                 break;
             case Tag.WHILE:
                 match(Tag.WHILE);
@@ -159,8 +159,10 @@ public class Parser {
                 term();
                 exprp();
                 break;
-            case ')':
             case Tag.RELOP:
+            case Tag.ELSE:
+            case Tag.WHEN:
+            case ')':
             case ';':
             case Tag.EOF:
             case '}':
@@ -193,8 +195,10 @@ public class Parser {
                 break;
             case '+':
             case '-':
-            case ')':
             case Tag.RELOP:
+            case Tag.ELSE:
+            case Tag.WHEN:
+            case ')':
             case ';':
             case Tag.EOF:
             case '}':

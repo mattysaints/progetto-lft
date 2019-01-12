@@ -160,6 +160,8 @@ public class Parser {
                 exprp();
                 break;
             case Tag.RELOP:
+            case Tag.ELSE:
+            case Tag.WHEN:
             case ')':
             case ';':
             case Tag.EOF:
@@ -194,6 +196,8 @@ public class Parser {
             case '+':
             case '-':
             case Tag.RELOP:
+            case Tag.ELSE:
+            case Tag.WHEN:
             case ')':
             case ';':
             case Tag.EOF:
