@@ -143,9 +143,7 @@ public class Parser {
             match(Tag.OR);
             cexpr();
             bexprp();
-        } else if(look.tag==')' ||
-               look.tag==Tag.AND ||
-               look.tag==Tag.OR);
+        } else if(look.tag==')');
         else error("syntax error");
     }
 
@@ -165,7 +163,6 @@ public class Parser {
             aexpr();
             cexprp();
         } else if(look.tag==')' ||
-               look.tag==Tag.AND ||
                look.tag==Tag.OR);
         else error("syntax error");
     }
@@ -173,7 +170,7 @@ public class Parser {
     private void aexpr(){
         if(look.tag=='!'){
             match('!');
-            bexpr();
+            aexpr();
         } else if(look.tag=='('){
             match('(');
             bexpr();
@@ -181,9 +178,9 @@ public class Parser {
         } else if(look.tag=='(' ||
                   look.tag==Tag.NUM ||
                   look.tag==Tag.ID){
-                        expr();
-                        match(Tag.RELOP);
-                        expr();
+            expr();
+            match(Tag.RELOP);
+            expr();
         } else error("syntax error");
     }
     
