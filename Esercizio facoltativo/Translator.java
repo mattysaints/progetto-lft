@@ -246,7 +246,7 @@ public class Translator {
                 lfalse_cexprp = lfalse;
             cexprp(ltrue_cexprp,lfalse_cexprp);
         } else if(look.tag==')' || look.tag==Tag.OR)
-            code.emitLabel(ltrue);
+            code.emit(OpCode.GOto,ltrue);
         else error("syntax error");
     }
     
@@ -271,37 +271,31 @@ public class Translator {
                 expr();
                 code.emit(OpCode.if_icmpeq,ltrue);
                 code.emit(OpCode.GOto,lfalse);
-                code.emitLabel(ltrue);
             } else if(look == Word.lt){
                 match(Tag.RELOP);
                 expr();
                 code.emit(OpCode.if_icmplt,ltrue);
                 code.emit(OpCode.GOto,lfalse);
-                code.emitLabel(ltrue);
             } else if(look == Word.le){
                 match(Tag.RELOP);
                 expr();
                 code.emit(OpCode.if_icmple,ltrue);
                 code.emit(OpCode.GOto,lfalse);
-                code.emitLabel(ltrue);
             } else if(look == Word.gt){
                 match(Tag.RELOP);
                 expr();
                 code.emit(OpCode.if_icmpgt,ltrue);
                 code.emit(OpCode.GOto,lfalse);
-                code.emitLabel(ltrue);
             } else if(look == Word.ge){
                 match(Tag.RELOP);
                 expr();
                 code.emit(OpCode.if_icmpge,ltrue);
                 code.emit(OpCode.GOto,lfalse);
-                code.emitLabel(ltrue);
             } else if(look == Word.ne){
                 match(Tag.RELOP);
                 expr();
                 code.emit(OpCode.if_icmpne,ltrue);
                 code.emit(OpCode.GOto,lfalse);
-                code.emitLabel(ltrue);
             }
         } else error("syntax error");
     }
