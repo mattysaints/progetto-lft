@@ -1,7 +1,6 @@
-a:=3;
+read(a);
 case
-    when(a<3 && !a>7 || (a==4 && a<>17) && !(a==4 || e<>3))
-        a:=1
+    when(a<3 || (a>7 && a<10) || (a>13 && a<17) || a==42)
+        print(1)
     else
-        a:=3;
-print(a)
+        print(0)
