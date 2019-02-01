@@ -1,7 +1,7 @@
-a:=5;
 read(a);
-case when(a==5)
-    b:=3
+case when(a==0)
+    a:=1
 else
-    while(a<>3)
-        read(a)
+    while(a<>0)
+        read(a); 
+print(1)
