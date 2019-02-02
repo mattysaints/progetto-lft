@@ -112,6 +112,8 @@ public class Translator {
                 code.emitLabel(lnext_stat1);
                 bexpr(ltrue_bexpr,lfalse_bexpr);
                 match(')');
+                //aggiunta:
+                code.emitLabel(ltrue_bexpr);
                 stat(lnext_stat1);
                 code.emit(OpCode.GOto,lnext_stat1);
                 code.emitLabel(lnext);
