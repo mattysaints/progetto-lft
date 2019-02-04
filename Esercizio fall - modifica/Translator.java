@@ -198,15 +198,15 @@ public class Translator {
            look.tag=='(' ||
            look.tag==Tag.NUM ||
            look.tag==Tag.ID){
-            int ltrue_cexpr = ltrue,
-                lfalse_cexpr = lfalse;
-            cexpr(ltrue_cexpr,lfalse_cexpr);
-            int ltrue_bexprp, lfalse_bexprp;
+            int ltrue_cexpr,lfalse_cexpr;
             if(ltrue==FALL)
-                ltrue_bexprp = code.newLabel();
+                ltrue_cexpr = code.newLabel();
             else
-                ltrue_bexprp = ltrue;
-            lfalse_bexprp = FALL;
+                ltrue_cexpr = ltrue;
+            lfalse_cexpr = FALL;
+            cexpr(ltrue_cexpr,lfalse_cexpr);
+            int ltrue_bexprp = ltrue_cexpr,
+                lfalse_bexprp = lfalse;
             bexprp(ltrue_bexprp,lfalse_bexprp);
         } else error("syntax error");
     }
@@ -214,21 +214,15 @@ public class Translator {
     private void bexprp(int ltrue, int lfalse){
         if(look.tag==Tag.OR){
             match(Tag.OR);
-            int ltrue_cexpr, lfalse_cexpr;
-            if(ltrue==FALL)
-                ltrue_cexpr = code.newLabel();
-            else
-                ltrue_cexpr = ltrue;
-            lfalse_cexpr = FALL;
+            int ltrue_cexpr = ltrue,
+                lfalse_cexpr = FALL;
             cexpr(ltrue_cexpr,lfalse_cexpr);
-            int ltrue_bexprp = ltrue,
+            int ltrue_bexprp = ltrue_cexpr,
                 lfalse_bexprp = lfalse;
             bexprp(ltrue_bexprp,lfalse_bexprp);
         } else if(look.tag==')'){
-            //if(ltrue!=FALL)
-            //    code.emitLabel(ltrue);
-            //if(lfalse!=FALL)
-            //    code.emit(OpCode.GOto,lfalse);
+            code.emit(OpCode.GOto,lfalse);
+            code.emitLabel(ltrue);
         } else error("syntax error");
     }
     
@@ -237,22 +231,6 @@ public class Translator {
            look.tag=='(' ||
            look.tag==Tag.NUM ||
            look.tag==Tag.ID){
-            int ltrue_aexpr = ltrue,
-                lfalse_aexpr = lfalse;
-            aexpr(ltrue_aexpr,lfalse_aexpr);
-            int ltrue_cexprp, lfalse_cexprp;
-            ltrue_cexprp = FALL;
-            if(lfalse==FALL)
-                lfalse_cexprp = code.newLabel();
-            else
-                lfalse_cexprp = lfalse;
-            cexprp(ltrue_cexprp,lfalse_cexprp);
-        } else error("syntax error");
-    }
-    
-    private void cexprp(int ltrue, int lfalse){
-        if(look.tag==Tag.AND){
-            match(Tag.AND);
             int ltrue_aexpr, lfalse_aexpr;
             ltrue_aexpr = FALL;
             if(lfalse==FALL)
@@ -261,13 +239,23 @@ public class Translator {
                 lfalse_aexpr = lfalse;
             aexpr(ltrue_aexpr,lfalse_aexpr);
             int ltrue_cexprp = ltrue,
-                lfalse_cexprp = lfalse;
+                lfalse_cexprp = lfalse_aexpr;           
+            cexprp(ltrue_cexprp,lfalse_cexprp);
+        } else error("syntax error");
+    }
+    
+    private void cexprp(int ltrue, int lfalse){
+        if(look.tag==Tag.AND){
+            match(Tag.AND);
+            int ltrue_aexpr = FALL,
+                lfalse_aexpr = lfalse;
+            aexpr(ltrue_aexpr,lfalse_aexpr);
+            int ltrue_cexprp = ltrue,
+                lfalse_cexprp = lfalse_aexpr;
             cexprp(ltrue_cexprp,lfalse_cexprp);
         } else if(look.tag==')' || look.tag==Tag.OR){
-            //if(lfalse!=FALL)
-            //    code.emitLabel(lfalse);
-            //if(ltrue!=FALL)
-            //    code.emit(OpCode.GOto,ltrue);
+            code.emit(OpCode.GOto,ltrue);
+            code.emitLabel(lfalse);
         } else error("syntax error");
     }
     

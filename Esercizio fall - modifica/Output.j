@@ -33,22 +33,32 @@
  istore 0
  iload 0
  ldc 3
- if_icmpge L4
+ if_icmpge L6
+ goto L5
+L6:
  iload 0
  ldc 7
- if_icmpgt L5
+ if_icmple L7
  iload 0
  ldc 10
- if_icmpge L6
+ if_icmpge L7
+ goto L5
+L7:
  iload 0
  ldc 13
- if_icmpgt L5
+ if_icmple L8
  iload 0
  ldc 17
- if_icmpge L7
+ if_icmpge L8
+ goto L5
+L8:
  iload 0
  ldc 42
- if_icmpeq L5
+ if_icmpne L9
+ goto L5
+L9:
+ goto L4
+L5:
  ldc 1
  invokestatic Output/print(I)V
  goto L2
