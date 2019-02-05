@@ -1,7 +1,5 @@
 import java.io.*;
 
-//CORRETTO: NON MODIFICARE!
-
 public class Parser {
     private Lexer lex;
     private BufferedReader pbr;

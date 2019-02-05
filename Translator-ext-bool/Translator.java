@@ -1,5 +1,6 @@
 import java.io.*;
 
+// Versione con espressioni booleane complesse
 public class Translator {
     private Lexer lex;
     private BufferedReader pbr;
@@ -70,8 +71,8 @@ public class Translator {
             match(';');
             int lnext_stat = code.newLabel();
             stat(lnext_stat);
-            int lnext_statlistp = lnext;
-            statlistp(lnext_statlistp);
+            int lnext_statlistp1 = lnext;
+            statlistp(lnext_statlistp1);
         } else if(look.tag=='}' || look.tag==Tag.EOF);
         else error("syntax error");
     }
@@ -97,22 +98,23 @@ public class Translator {
                     lend_whenlist = lnext;
                 whenlist(lnext_whenlist,lend_whenlist);
                 match(Tag.ELSE);
-                int lnext_stat = lnext;
-                stat(lnext_stat);
-                code.emitLabel(lnext);
+                int lnext_stat1 = lnext;
+                stat(lnext_stat1);
+                code.emitLabel(lnext); //
                 break;
             case Tag.WHILE:
                 match(Tag.WHILE);
                 match('(');
                 int ltrue_bexpr = code.newLabel(),
                     lfalse_bexpr = lnext;
-                    lnext_stat = code.newLabel();
-                code.emitLabel(lnext_stat);
+                    lnext_stat1 = code.newLabel();
+                code.emitLabel(lnext_stat1);
                 bexpr(ltrue_bexpr,lfalse_bexpr);
-                code.emitLabel(ltrue_bexpr);
                 match(')');
-                stat(lnext_stat);
-                code.emit(OpCode.GOto,lnext_stat);
+                //aggiunta:
+                code.emitLabel(ltrue_bexpr);
+                stat(lnext_stat1);
+                code.emit(OpCode.GOto,lnext_stat1);
                 code.emitLabel(lnext);
                 break;
             case '{':
@@ -168,9 +170,9 @@ public class Translator {
             whenitem(lnext_whenitem);
             code.emit(OpCode.GOto,lend);
             code.emitLabel(lnext_whenitem);
-            int lnext_whenlistp = lnext,
-                lend_whenlistp = lend;
-            whenlistp(lnext_whenlistp,lend_whenlistp);
+            int lnext_whenlistp1 = lnext,
+                lend_whenlistp1 = lend;
+            whenlistp(lnext_whenlistp1,lend_whenlistp1);
         } else if(look.tag==Tag.ELSE);
         else error("syntax error");
     }
@@ -183,16 +185,87 @@ public class Translator {
                 lfalse_bexpr = lnext;
             bexpr(ltrue_bexpr,lfalse_bexpr);
             match(')');
-            int lnext_stat = lnext;
             code.emitLabel(ltrue_bexpr);
+            int lnext_stat = lnext;
             stat(lnext_stat);
         } else error("syntax error");
     }
 
-    private void bexpr(int ltrue, int lfalse) {
-        if(look.tag=='(' ||
+    private void bexpr(int ltrue, int lfalse){
+        if(look.tag=='!' ||
+           look.tag=='(' ||
            look.tag==Tag.NUM ||
            look.tag==Tag.ID){
+            int ltrue_cexpr = ltrue,
+                lfalse_cexpr = code.newLabel();
+            cexpr(ltrue_cexpr,lfalse_cexpr);
+            code.emitLabel(lfalse_cexpr);
+            int ltrue_bexprp = ltrue,
+                lfalse_bexprp = lfalse;
+            bexprp(ltrue_bexprp,lfalse_bexprp);
+        } else error("syntax error");
+    }
+    
+    private void bexprp(int ltrue, int lfalse){
+        if(look.tag==Tag.OR){
+            match(Tag.OR);
+            int ltrue_cexpr = ltrue,
+                lfalse_cexpr = code.newLabel();
+            cexpr(ltrue_cexpr,lfalse_cexpr);
+            code.emitLabel(lfalse_cexpr);
+            int ltrue_bexprp = ltrue,
+                lfalse_bexprp = lfalse;
+            bexprp(ltrue_bexprp,lfalse_bexprp);
+        } else if(look.tag==')')
+            code.emit(OpCode.GOto,lfalse);
+        else error("syntax error");
+    }
+    
+    private void cexpr(int ltrue, int lfalse){
+        if(look.tag=='!' ||
+           look.tag=='(' ||
+           look.tag==Tag.NUM ||
+           look.tag==Tag.ID){
+            int ltrue_aexpr = code.newLabel(),
+                lfalse_aexpr = lfalse;
+            aexpr(ltrue_aexpr,lfalse_aexpr);
+            code.emitLabel(ltrue_aexpr);
+            int ltrue_cexprp = ltrue,
+                lfalse_cexprp = lfalse;
+            cexprp(ltrue_cexprp,lfalse_cexprp);
+        } else error("syntax error");
+    }
+    
+    private void cexprp(int ltrue, int lfalse){
+        if(look.tag==Tag.AND){
+            match(Tag.AND);
+            int ltrue_aexpr = code.newLabel(),
+                lfalse_aexpr = lfalse;
+            aexpr(ltrue_aexpr,lfalse_aexpr);
+            code.emitLabel(ltrue_aexpr);
+            int ltrue_cexprp = ltrue,
+                lfalse_cexprp = lfalse;
+            cexprp(ltrue_cexprp,lfalse_cexprp);
+        } else if(look.tag==')' || look.tag==Tag.OR)
+            code.emit(OpCode.GOto,ltrue);
+        else error("syntax error");
+    }
+    
+    private void aexpr(int ltrue, int lfalse){
+        if(look.tag=='!'){
+            match('!');
+            int ltrue_aexpr = lfalse,
+                lfalse_aexpr = ltrue;
+            aexpr(ltrue_aexpr,lfalse_aexpr);
+        } else if(look.tag=='('){
+            match('(');
+            int ltrue_bexpr = ltrue,
+                lfalse_bexpr = lfalse;
+            bexpr(ltrue_bexpr,lfalse_bexpr);
+            match(')');
+        } else if(look.tag=='(' ||
+                  look.tag==Tag.NUM ||
+                  look.tag==Tag.ID){
             expr();
             if(look == Word.eq){
                 match(Tag.RELOP);
@@ -258,6 +331,8 @@ public class Translator {
             case ';':
             case Tag.EOF:
             case '}':
+            case Tag.AND:
+            case Tag.OR:
                 break;
             default:
                 error("syntax error");
@@ -297,6 +372,8 @@ public class Translator {
             case ';':
             case Tag.EOF:
             case '}':
+            case Tag.AND:
+            case Tag.OR:
                 break;
             default:
                 error("syntax error");

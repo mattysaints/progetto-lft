@@ -2,8 +2,6 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;     //per la funzione endsWith()
 
-//CORRETTO: NON MODIFICARE!
-
 public class Lexer {
 
     public static int line = 1;
@@ -18,7 +16,7 @@ public class Lexer {
     }
 
     public Token lexical_scan(BufferedReader br) {
-        while (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r' || peek == '/') {  //gestione caratteri di separazione
+        while (peek == ' ' || peek == '\t' || peek == '\n'  || peek == '\r' || peek == '/') {
             if (peek == '\n') line++;
             else if(peek=='/'){      //gestione commenti
                 readch(br);
@@ -38,7 +36,7 @@ public class Lexer {
             readch(br);
         }
         
-        switch (peek) {     //gestione caratteri speciali con pattern singolo
+        switch (peek) {     //token con singolo carattere
             case '!':
                 peek = ' ';
                 return Token.not;
@@ -66,7 +64,7 @@ public class Lexer {
             case ';':
                 peek = ' ';
                 return Token.semicolon;
-            case '&':           //gestione token con pattern da 2 caratteri
+            case '&':           //token con pattern da 2 caratteri
                 readch(br);
                 if (peek == '&') {
                     peek = ' ';
@@ -156,7 +154,7 @@ public class Lexer {
                               word.equals("read");
                         readch(br);
                     }
-                    if(found){          //parola chiave
+                    if(found){          //se e' una parola chiave
                         if(word.equals("case"))
                             return Word.casetok;
                         else if(word.equals("when"))
@@ -173,7 +171,7 @@ public class Lexer {
                             return Word.print;
                         else
                             return Word.read;
-                    } else {            //identificatore
+                    } else {            //se e' un identificatore
                         while(Character.isDigit(peek)||Character.isLetter(peek)||peek=='_'){
                             word+=peek;
                             readch(br);
@@ -181,7 +179,7 @@ public class Lexer {
                         return new Word(Tag.ID,word);
                     }
                 }
-                else if (Character.isDigit(peek)) {       //numero
+                else if (Character.isDigit(peek)) {       //se e' un numero
                     String number="";
                     while(Character.isDigit(peek)){
                         number+=peek;
@@ -199,7 +197,7 @@ public class Lexer {
 		
     public static void main(String[] args) {
         Lexer lex = new Lexer();
-        String path = Config.filePath("test.pas"); // il percorso del file da leggere
+        String path = args[0]; // il percorso del file da leggere
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             Token tok;
