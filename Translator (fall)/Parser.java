@@ -1,6 +1,6 @@
 import java.io.*;
 
-//CORRETTO: NON MODIFICARE! VERSIONE CON ESPRESSIONI BOOLEANE
+//CORRETTO: NON MODIFICARE!
 
 public class Parser {
     private Lexer lex;
@@ -129,61 +129,15 @@ public class Parser {
     }
     
     private void bexpr(){
-        if(look.tag=='!' ||
-           look.tag=='(' ||
+        if(look.tag=='(' ||
            look.tag==Tag.NUM ||
            look.tag==Tag.ID){
-            cexpr();
-            bexprp();
-        } else error("syntax error");
-    }
-    
-    private void bexprp(){
-        if(look.tag==Tag.OR){
-            match(Tag.OR);
-            cexpr();
-            bexprp();
-        } else if(look.tag==')');
-        else error("syntax error");
-    }
-
-    private void cexpr(){
-        if(look.tag=='!' ||
-           look.tag=='(' ||
-           look.tag==Tag.NUM ||
-           look.tag==Tag.ID){
-            aexpr();
-            cexprp();
-        } else error("syntax error");
-    }
-    
-    private void cexprp(){
-        if(look.tag==Tag.AND){
-            match(Tag.AND);
-            aexpr();
-            cexprp();
-        } else if(look.tag==')' ||
-               look.tag==Tag.OR);
-        else error("syntax error");
-    }
-    
-    private void aexpr(){
-        if(look.tag=='!'){
-            match('!');
-            aexpr();
-        } else if(look.tag=='('){
-            match('(');
-            bexpr();
-            match(')');
-        } else if(look.tag=='(' ||
-                  look.tag==Tag.NUM ||
-                  look.tag==Tag.ID){
             expr();
             match(Tag.RELOP);
             expr();
         } else error("syntax error");
     }
-    
+
     private void expr() {
         if(look.tag=='(' ||
            look.tag==Tag.NUM ||
@@ -212,8 +166,6 @@ public class Parser {
             case ';':
             case Tag.EOF:
             case '}':
-            case Tag.AND:
-            case Tag.OR:
                 break;
             default:
                 error("syntax error");
@@ -250,8 +202,6 @@ public class Parser {
             case ';':
             case Tag.EOF:
             case '}':
-            case Tag.AND:
-            case Tag.OR:
                 break;
             default:
                 error("syntax error");

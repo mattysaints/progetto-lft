@@ -1,16 +1,13 @@
 import java.io.*;
 
-//CORRETTO: NON MODIFICARE! VERSIONE CON FALL
-
 public class Translator {
     
-    //definizione visuale dell'etichetta FALL
-    private static final int FALL = -1;
+    //definizione visuale di fall
+    private static final short FALL = -1;
     
     private Lexer lex;
     private BufferedReader pbr;
     private Token look;
-    private int op;
     
     SymbolTable st = new SymbolTable();
     CodeGenerator code = new CodeGenerator();
@@ -33,8 +30,6 @@ public class Translator {
 
     void match(int t) {
         if (look.tag == t) {
-            if(look.tag==Tag.AND || look.tag==Tag.OR)
-                op = look.tag;
             if (look.tag != Tag.EOF) move();
         } else error("syntax error");
     }
@@ -196,190 +191,76 @@ public class Translator {
         } else error("syntax error");
     }
 
-    private void bexpr(int ltrue, int lfalse){
-        if(look.tag=='!' ||
-           look.tag=='(' ||
+    private void bexpr(int ltrue, int lfalse) {
+        if(look.tag=='(' ||
            look.tag==Tag.NUM ||
            look.tag==Tag.ID){
-            int ltrue_cexpr,lfalse_cexpr;
-            if(ltrue==FALL)
-                ltrue_cexpr = code.newLabel();
-            else
-                ltrue_cexpr = ltrue;
-            lfalse_cexpr = FALL;
-            cexpr(ltrue_cexpr,lfalse_cexpr);
-            int ltrue_bexprp = ltrue_cexpr,
-                lfalse_bexprp = lfalse;
-            bexprp(ltrue_bexprp,lfalse_bexprp);
-        } else error("syntax error");
-    }
-    
-    private void bexprp(int ltrue, int lfalse){
-        if(look.tag==Tag.OR){
-            match(Tag.OR);
-            int ltrue_cexpr = ltrue,
-                lfalse_cexpr = FALL;
-            cexpr(ltrue_cexpr,lfalse_cexpr);
-            int ltrue_bexprp = ltrue_cexpr,
-                lfalse_bexprp = lfalse;
-            bexprp(ltrue_bexprp,lfalse_bexprp);
-        } else if(look.tag==')'){
-            code.emit(OpCode.GOto,lfalse);
-            code.emitLabel(ltrue);
-        } else error("syntax error");
-    }
-    
-    private void cexpr(int ltrue, int lfalse){
-        if(look.tag=='!' ||
-           look.tag=='(' ||
-           look.tag==Tag.NUM ||
-           look.tag==Tag.ID){
-            int ltrue_aexpr, lfalse_aexpr;
-            ltrue_aexpr = FALL;
-            if(lfalse==FALL)
-                lfalse_aexpr = code.newLabel();
-            else
-                lfalse_aexpr = lfalse;
-            aexpr(ltrue_aexpr,lfalse_aexpr);
-            int ltrue_cexprp = ltrue,
-                lfalse_cexprp = lfalse_aexpr;           
-            cexprp(ltrue_cexprp,lfalse_cexprp);
-        } else error("syntax error");
-    }
-    
-    private void cexprp(int ltrue, int lfalse){
-        if(look.tag==Tag.AND){
-            match(Tag.AND);
-            int ltrue_aexpr = FALL,
-                lfalse_aexpr = lfalse;
-            aexpr(ltrue_aexpr,lfalse_aexpr);
-            int ltrue_cexprp = ltrue,
-                lfalse_cexprp = lfalse_aexpr;
-            cexprp(ltrue_cexprp,lfalse_cexprp);
-        } else if(look.tag==')' || look.tag==Tag.OR){
-            code.emit(OpCode.GOto,ltrue);
-            code.emitLabel(lfalse);
-        } else error("syntax error");
-    }
-    
-    //modifica
-    private void aexpr(int ltrue, int lfalse){
-        if(look.tag=='!'){
-            match('!');
-            int ltrue_aexpr = lfalse,
-                lfalse_aexpr = ltrue;
-            aexpr(ltrue_aexpr,lfalse_aexpr);
-        } else if(look.tag=='('){
-            match('(');
-            int ltrue_bexpr = ltrue,
-                lfalse_bexpr = lfalse;
-            bexpr(ltrue_bexpr,lfalse_bexpr);
-            match(')');
-        } else if(look.tag=='(' ||
-                  look.tag==Tag.NUM ||
-                  look.tag==Tag.ID){
             expr();
             if(look == Word.eq){
                 match(Tag.RELOP);
                 expr();
-                //***
-                if(ltrue!=FALL && lfalse!=FALL && op==Tag.AND && look.tag!=Tag.AND)
-                    ltrue = FALL;
-                else if(ltrue!=FALL && lfalse!=FALL && op==Tag.OR && (look.tag!=Tag.AND || look.tag!=Tag.OR))
-                    lfalse = FALL;
-                //***
                 if(ltrue==FALL)
                     code.emit(OpCode.if_icmpne,lfalse);
                 else if(lfalse==FALL)
                     code.emit(OpCode.if_icmpeq,ltrue);
                 else{
-                    code.emit(OpCode.if_icmpeq,ltrue);
-                    code.emit(OpCode.GOto,lfalse);
+                code.emit(OpCode.if_icmpeq,ltrue);
+                code.emit(OpCode.GOto,lfalse);
                 }
             } else if(look == Word.lt){
                 match(Tag.RELOP);
                 expr();
-                //***
-                if(ltrue!=FALL && lfalse!=FALL && op==Tag.AND && look.tag!=Tag.AND)
-                    ltrue = FALL;
-                else if(ltrue!=FALL && lfalse!=FALL && op==Tag.OR && (look.tag!=Tag.AND || look.tag!=Tag.OR))
-                    lfalse = FALL;
-                //***
                 if(ltrue==FALL)
                     code.emit(OpCode.if_icmpge,lfalse);
                 else if(lfalse==FALL)
                     code.emit(OpCode.if_icmplt,ltrue);
                 else{
-                    code.emit(OpCode.if_icmplt,ltrue);
-                    code.emit(OpCode.GOto,lfalse);
+                code.emit(OpCode.if_icmplt,ltrue);
+                code.emit(OpCode.GOto,lfalse);
                 }
             } else if(look == Word.le){
                 match(Tag.RELOP);
                 expr();
-                //***
-                if(ltrue!=FALL && lfalse!=FALL && op==Tag.AND && look.tag!=Tag.AND)
-                    ltrue = FALL;
-                else if(ltrue!=FALL && lfalse!=FALL && op==Tag.OR && (look.tag!=Tag.AND || look.tag!=Tag.OR))
-                    lfalse = FALL;
-                //***
                 if(ltrue==FALL)
                     code.emit(OpCode.if_icmpgt,lfalse);
                 else if(lfalse==FALL)
                     code.emit(OpCode.if_icmple,ltrue);
                 else{
-                    code.emit(OpCode.if_icmple,ltrue);
-                    code.emit(OpCode.GOto,lfalse);
+                code.emit(OpCode.if_icmple,ltrue);
+                code.emit(OpCode.GOto,lfalse);
                 }
             } else if(look == Word.gt){
                 match(Tag.RELOP);
                 expr();
-                //***
-                if(ltrue!=FALL && lfalse!=FALL && op==Tag.AND && look.tag!=Tag.AND)
-                    ltrue = FALL;
-                else if(ltrue!=FALL && lfalse!=FALL && op==Tag.OR && (look.tag!=Tag.AND || look.tag!=Tag.OR))
-                    lfalse = FALL;
-                //***
                 if(ltrue==FALL)
                     code.emit(OpCode.if_icmple,lfalse);
                 else if(lfalse==FALL)
                     code.emit(OpCode.if_icmpgt,ltrue);
                 else{
-                    code.emit(OpCode.if_icmpgt,ltrue);
-                    code.emit(OpCode.GOto,lfalse);
+                code.emit(OpCode.if_icmpgt,ltrue);
+                code.emit(OpCode.GOto,lfalse);
                 }
             } else if(look == Word.ge){
                 match(Tag.RELOP);
                 expr();
-                //***
-                if(ltrue!=FALL && lfalse!=FALL && op==Tag.AND && look.tag!=Tag.AND)
-                    ltrue = FALL;
-                else if(ltrue!=FALL && lfalse!=FALL && op==Tag.OR && (look.tag!=Tag.AND || look.tag!=Tag.OR))
-                    lfalse = FALL;
-                //***
                 if(ltrue==FALL)
                     code.emit(OpCode.if_icmplt,lfalse);
                 else if(lfalse==FALL)
                     code.emit(OpCode.if_icmpge,ltrue);
                 else{
-                    code.emit(OpCode.if_icmpge,ltrue);
-                    code.emit(OpCode.GOto,lfalse);
+                code.emit(OpCode.if_icmpge,ltrue);
+                code.emit(OpCode.GOto,lfalse);
                 }
             } else if(look == Word.ne){
                 match(Tag.RELOP);
                 expr();
-                //***
-                if(ltrue!=FALL && lfalse!=FALL && op==Tag.AND && look.tag!=Tag.AND)
-                    ltrue = FALL;
-                else if(ltrue!=FALL && lfalse!=FALL && op==Tag.OR && (look.tag!=Tag.AND || look.tag!=Tag.OR))
-                    lfalse = FALL;
-                //***
                 if(ltrue==FALL)
                     code.emit(OpCode.if_icmpeq,lfalse);
                 else if(lfalse==FALL)
                     code.emit(OpCode.if_icmpne,ltrue);
                 else{
-                    code.emit(OpCode.if_icmpne,ltrue);
-                    code.emit(OpCode.GOto,lfalse);
+                code.emit(OpCode.if_icmpne,ltrue);
+                code.emit(OpCode.GOto,lfalse);
                 }
             }
         } else error("syntax error");
@@ -415,8 +296,6 @@ public class Translator {
             case ';':
             case Tag.EOF:
             case '}':
-            case Tag.AND:
-            case Tag.OR:
                 break;
             default:
                 error("syntax error");
@@ -456,8 +335,6 @@ public class Translator {
             case ';':
             case Tag.EOF:
             case '}':
-            case Tag.AND:
-            case Tag.OR:
                 break;
             default:
                 error("syntax error");
