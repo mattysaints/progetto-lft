@@ -1,9 +1,10 @@
 import java.io.*;
 
+//Versione con eliminazione goto ridondanti
 public class Translator {
     
     //definizione visuale di fall
-    private static final short FALL = -1;
+    private static final byte FALL = -1;
     
     private Lexer lex;
     private BufferedReader pbr;

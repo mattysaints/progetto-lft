@@ -38,25 +38,33 @@
 L6:
  iload 0
  ldc 7
- if_icmple L7
+ if_icmple L9
  iload 0
  ldc 10
- if_icmpge L7
+ if_icmpge L9
+ goto L8
+L9:
+ goto L7
+L8:
  goto L5
 L7:
  iload 0
  ldc 13
- if_icmple L8
+ if_icmple L12
  iload 0
  ldc 17
- if_icmpge L8
+ if_icmpge L12
+ goto L11
+L12:
+ goto L10
+L11:
  goto L5
-L8:
+L10:
  iload 0
  ldc 42
- if_icmpne L9
+ if_icmpne L13
  goto L5
-L9:
+L13:
  goto L4
 L5:
  ldc 1

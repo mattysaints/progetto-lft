@@ -1,11 +1,10 @@
 import java.io.*;
 
-//CORRETTO: NON MODIFICARE! VERSIONE CON FALL
-
+//Versione con espressioni booleane complesse e eliminazione goto ridondanti
 public class Translator {
     
     //definizione visuale dell'etichetta FALL
-    private static final int FALL = -1;
+    private static final byte FALL = -1;
     
     private Lexer lex;
     private BufferedReader pbr;

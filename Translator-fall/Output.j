@@ -37,21 +37,125 @@
  istore 0
  ldc 0
  istore 1
-L5:
+ ldc 0
+ istore 2
+ ldc 0
+ istore 3
+ ldc 0
+ istore 4
+L8:
  iload 0
  ldc 0
  ldc 1
  isub 
- if_icmpeq L4
- invokestatic Output/read()I
- istore 0
+ if_icmpeq L7
+ iload 0
+ istore 5
+L11:
+ iload 5
+ ldc 0
+ if_icmple L10
+ iload 5
+ ldc 2
+ isub 
+ istore 5
+ goto L11
+L10:
+ iload 5
+ ldc 0
+ if_icmpne L14
  iload 1
  ldc 1
  iadd 
  istore 1
- goto L5
-L4:
+ goto L12
+L14:
  iload 1
+ istore 1
+L12:
+ iload 0
+ istore 5
+L17:
+ iload 5
+ ldc 0
+ if_icmple L16
+ iload 5
+ ldc 3
+ isub 
+ istore 5
+ goto L17
+L16:
+ iload 5
+ ldc 0
+ if_icmpne L20
+ iload 2
+ ldc 1
+ iadd 
+ istore 2
+ goto L18
+L20:
+ iload 2
+ istore 2
+L18:
+ iload 0
+ istore 5
+L23:
+ iload 5
+ ldc 0
+ if_icmple L22
+ iload 5
+ ldc 5
+ isub 
+ istore 5
+ goto L23
+L22:
+ iload 5
+ ldc 0
+ if_icmpne L26
+ iload 3
+ ldc 1
+ iadd 
+ istore 3
+ goto L24
+L26:
+ iload 3
+ istore 3
+L24:
+ iload 0
+ istore 5
+L29:
+ iload 5
+ ldc 0
+ if_icmple L28
+ iload 5
+ ldc 7
+ isub 
+ istore 5
+ goto L29
+L28:
+ iload 5
+ ldc 0
+ if_icmpne L32
+ iload 4
+ ldc 1
+ iadd 
+ istore 4
+ goto L30
+L32:
+ iload 4
+ istore 4
+L30:
+ invokestatic Output/read()I
+ istore 0
+ goto L8
+L7:
+ iload 1
+ invokestatic Output/print(I)V
+ iload 2
+ invokestatic Output/print(I)V
+ iload 3
+ invokestatic Output/print(I)V
+ iload 4
  invokestatic Output/print(I)V
 L0:
  return
